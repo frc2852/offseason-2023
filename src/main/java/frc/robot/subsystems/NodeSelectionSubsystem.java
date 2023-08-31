@@ -10,35 +10,12 @@ import java.util.List;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.util.models.Node;
 
 public class NodeSelectionSubsystem extends SubsystemBase {
 
   public enum Alliance {
     RED, BLUE, INVALID
-  }
-
-  public static class Node {
-    public String description;
-    public String redAprilTagId;
-    public String blueAprilTagId;
-    public boolean selected;
-
-    public Node(String description, String redAprilTagId, String blueAprilTagId, boolean selected) {
-      this.description = description;
-      this.redAprilTagId = redAprilTagId;
-      this.blueAprilTagId = blueAprilTagId;
-      this.selected = selected;
-    }
-
-    @Override
-    public String toString() {
-      return "Node{" +
-          "description='" + description + '\'' +
-          ", redAprilTagId='" + redAprilTagId + '\'' +
-          ", blueAprilTagId='" + blueAprilTagId + '\'' +
-          ", selected=" + selected +
-          '}';
-    }
   }
 
   private final List<Node> grid = new ArrayList<>();
