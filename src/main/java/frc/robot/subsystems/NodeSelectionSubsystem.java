@@ -94,7 +94,6 @@ public class NodeSelectionSubsystem extends SubsystemBase {
   }
 
   public String getSelectedAprilTagId() {
-    updateAlliance();
     Node zone = getSelectedZone();
     switch (currentAlliance) {
       case RED:
