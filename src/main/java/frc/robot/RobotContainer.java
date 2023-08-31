@@ -15,25 +15,25 @@ import frc.robot.subsystems.VisionTrackingSubsystem;
 
 public class RobotContainer {
 
-  CommandPS4Controller driverController = new CommandPS4Controller(0);
+	CommandPS4Controller driverController = new CommandPS4Controller(0);
 
-  // Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
-  private final SlewRateLimiter m_speedLimiter = new SlewRateLimiter(3);
-  private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
+	// Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
+	private final SlewRateLimiter m_speedLimiter = new SlewRateLimiter(3);
+	private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
 
-  private final NodeSelectionSubsystem mNodeSelectionSubsystem = new NodeSelectionSubsystem();
-  private final VisionTrackingSubsystem mVisionTrackingSubsystem = new VisionTrackingSubsystem(); 
+	private final NodeSelectionSubsystem mNodeSelectionSubsystem = new NodeSelectionSubsystem();
+	private final VisionTrackingSubsystem mVisionTrackingSubsystem = new VisionTrackingSubsystem();
 
-  public RobotContainer() {
-    configureBindings();
-  }
+	public RobotContainer() {
+		configureBindings();
+	}
 
-  private void configureBindings() {
-    driverController.L1().onTrue(new CycleGridLeft(mNodeSelectionSubsystem));
-    driverController.R1().onTrue(new CycleGridRight(mNodeSelectionSubsystem));
-  }
+	private void configureBindings() {
+		driverController.L1().onTrue(new CycleGridLeft(mNodeSelectionSubsystem));
+		driverController.R1().onTrue(new CycleGridRight(mNodeSelectionSubsystem));
+	}
 
-  public Command getAutonomousCommand() {
-    return Commands.print("No autonomous command configured");
-  }
+	public Command getAutonomousCommand() {
+		return Commands.print("No autonomous command configured");
+	}
 }

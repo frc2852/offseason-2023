@@ -8,22 +8,22 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.NodeSelectionSubsystem;
 
 /** Add your docs here. */
-public class CycleGridRight extends CommandBase  {
-    
-    private final NodeSelectionSubsystem visionTrackingSubsystem;
+public class CycleGridRight extends CommandBase {
 
-    public CycleGridRight(NodeSelectionSubsystem visionTrackingSubsystem) {
-      this.visionTrackingSubsystem = visionTrackingSubsystem;
-      addRequirements(visionTrackingSubsystem);
-    }
-  
-    @Override
-    public void execute() {
-      visionTrackingSubsystem.cycleRight();
-    }
+	private final NodeSelectionSubsystem visionTrackingSubsystem;
 
-    @Override
-    public boolean isFinished() {
-      return true;
-    }
+	public CycleGridRight(NodeSelectionSubsystem visionTrackingSubsystem) {
+		this.visionTrackingSubsystem = visionTrackingSubsystem;
+		addRequirements(visionTrackingSubsystem);
+	}
+
+	@Override
+	public void execute() {
+		visionTrackingSubsystem.cycleRight();
+	}
+
+	@Override
+	public boolean isFinished() {
+		return true;
+	}
 }
