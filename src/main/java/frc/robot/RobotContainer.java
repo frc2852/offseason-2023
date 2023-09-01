@@ -8,8 +8,11 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
+import frc.robot.commands.Intake.IntakeCommand;
+import frc.robot.commands.Intake.IntakeOutCommand;
 import frc.robot.commands.VisionTracking.CycleGridLeft;
 import frc.robot.commands.VisionTracking.CycleGridRight;
+import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.NodeSelectionSubsystem;
 import frc.robot.subsystems.VisionTrackingSubsystem;
 
@@ -23,6 +26,7 @@ public class RobotContainer {
 
 	private final NodeSelectionSubsystem mNodeSelectionSubsystem = new NodeSelectionSubsystem();
 	private final VisionTrackingSubsystem mVisionTrackingSubsystem = new VisionTrackingSubsystem();
+	private final IntakeSubsystem mIntakeSubsystem = new IntakeSubsystem(); 
 
 	public RobotContainer() {
 		configureBindings();
@@ -31,6 +35,9 @@ public class RobotContainer {
 	private void configureBindings() {
 		driverController.L1().onTrue(new CycleGridLeft(mNodeSelectionSubsystem));
 		driverController.R1().onTrue(new CycleGridRight(mNodeSelectionSubsystem));
+
+		driverController.triangle().whileTrue(new IntakeOutCommand(mIntakeSubsystem));
+		driverController.cross().whileTrue(new IntakeCommand(mIntakeSubsystem));
 	}
 
 	public Command getAutonomousCommand() {

@@ -11,6 +11,10 @@ import edu.wpi.first.math.geometry.Translation3d;
 /** Add your docs here. */
 public final class Constants {
 
+	public static final int INTAKE_LEFT = 13;
+	public static final int INTAKE_RIGHT = 14;
+	public static final int INTAKE_TOP = 15;
+
 	public static class VisionConstants {
 		public static final Transform3d robotToCam = new Transform3d(
 				new Translation3d(0.5, 0.0, 0.5),
