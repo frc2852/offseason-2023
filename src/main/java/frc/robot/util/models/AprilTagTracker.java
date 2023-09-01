@@ -10,4 +10,9 @@ public class AprilTagTracker {
 		this.blueAprilTagId = blueAprilTagId;
 		this.isDetected = false;
 	}
+
+	// Check if the given set of tagIDs matches either red or blue AprilTag IDs
+	public boolean matchesId(String tagID) {
+		return redAprilTagId.equals(tagID) || blueAprilTagId.equals(tagID);
+	}
 }

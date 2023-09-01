@@ -4,88 +4,117 @@
 
 package frc.robot.subsystems;
 
+// Standard Java imports
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+
+// PhotonVision imports
+import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
+import org.photonvision.PhotonPoseEstimator.PoseStrategy;
+
+// WPILib imports
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+// Local imports
 import frc.robot.Constants.VisionConstants;
 import frc.robot.util.models.AprilTagTracker;
+import frc.robot.util.models.ConfigManager;
 
 public class VisionTrackingSubsystem extends SubsystemBase {
 
-	private final List<AprilTagTracker> aprilTagTrackers = new ArrayList<>();
+	// Fields
+	private final PhotonCamera photonCamera;
+	private PhotonPoseEstimator photonPoseEstimator;
+	private final List<AprilTagTracker> aprilTagTrackers;
 
-	PhotonCamera photonCamera;
-	PhotonPoseEstimator photonPoseEstimator;
-
+	// Constructor
 	public VisionTrackingSubsystem() {
-
-		// Change the name of your camera here to whatever it is in the PhotonVision UI.
 		photonCamera = new PhotonCamera(VisionConstants.cameraName);
+		aprilTagTrackers = initializeAprilTagTrackers();
+		initializePhotonPoseEstimator();
+	}
 
-		// Initialize the AprilTagTrackers
-		aprilTagTrackers.add(new AprilTagTracker("1", "6"));
-		aprilTagTrackers.add(new AprilTagTracker("2", "7"));
-		aprilTagTrackers.add(new AprilTagTracker("3", "8"));
+	// Initialization Methods
+	private List<AprilTagTracker> initializeAprilTagTrackers() {
+		List<AprilTagTracker> trackers = new ArrayList<>();
+		trackers.add(new AprilTagTracker("1", "6"));
+		trackers.add(new AprilTagTracker("2", "7"));
+		trackers.add(new AprilTagTracker("3", "8"));
+		return trackers;
+	}
 
+	private void initializePhotonPoseEstimator() {
 		try {
-			// Attempt to load the AprilTagFieldLayout that will tell us where the tags are
-			// on the field.
 			AprilTagFieldLayout fieldLayout = AprilTagFields.k2023ChargedUp.loadAprilTagLayoutField();
-
-			// Create pose estimator
-			photonPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP, photonCamera,
+			photonPoseEstimator = new PhotonPoseEstimator(
+					fieldLayout,
+					PoseStrategy.MULTI_TAG_PNP,
+					photonCamera,
 					VisionConstants.robotToCam);
 			photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-
 		} catch (IOException e) {
 			DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
 			photonPoseEstimator = null;
 		}
 	}
 
-	/**
-	 * @param estimatedRobotPose The current best guess at robot pose
-	 * @return an EstimatedRobotPose with an estimated pose, the timestamp, and
-	 *         targets used to create
-	 *         the estimate
-	 */
+	// Core Methods
 	public Optional<EstimatedRobotPose> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
 		if (photonPoseEstimator == null) {
-			// The field layout failed to load, so we cannot estimate poses.
 			return Optional.empty();
 		}
 		photonPoseEstimator.setReferencePose(prevEstimatedRobotPose);
 		return photonPoseEstimator.update();
 	}
 
-	public void updateTagDetection() {
-		// This is where you would update the isDetected flags of your AprilTagTrackers
-		// based on whatever AprilTag detection logic you're using.
-		// For example, you might query the photonCamera for detected tags and then
-		// update the corresponding AprilTagTracker's isDetected flag.
-	}
-
+	// Periodic Update
 	@Override
 	public void periodic() {
-		updateTagDetection();
+		// TODO: Replace with photonvision detected tags
+		Set<String> detectedTags = new HashSet<>();
+		detectedTags.add("1");
+		detectedTags.add("7");
 
-		// Display the detection status of the AprilTags on the SmartDashboard
+		// Update tag detection statuses based on the set of detected tags.
+		updateTagDetection(detectedTags);
+
+		updateSmartDashboard();
+	}
+
+	// Utility Methods
+	private void updateSmartDashboard() {
 		for (int i = 0; i < aprilTagTrackers.size(); ++i) {
 			AprilTagTracker tracker = aprilTagTrackers.get(i);
 			SmartDashboard.putBoolean("AprilTag " + (i + 1), tracker.isDetected);
+		}
+	}
+
+	private void updateTagDetection(Set<String> tagIDs) {
+		for (AprilTagTracker tracker : aprilTagTrackers) {
+			String relevantTagId = getRelevantTagIdForAlliance(tracker);
+			tracker.isDetected = tagIDs.contains(relevantTagId);
+		}
+	}
+
+	private String getRelevantTagIdForAlliance(AprilTagTracker tracker) {
+		switch (ConfigManager.getAlliance()) {
+			case Red:
+				return tracker.redAprilTagId;
+			case Blue:
+				return tracker.blueAprilTagId;
+			default:
+				return null;
 		}
 	}
 }
