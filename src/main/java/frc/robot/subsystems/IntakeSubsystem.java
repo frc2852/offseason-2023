@@ -8,10 +8,11 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.util.LoggingManager;
+import frc.robot.util.LoggingManager.MessageType;
 
 public class IntakeSubsystem extends SubsystemBase {
 
@@ -45,25 +46,39 @@ public class IntakeSubsystem extends SubsystemBase {
 	}
 
 	public void runIntakeIn() {
-		DriverStation.reportWarning(
-			String.format("Running intake: leftSpeed=%.2f (Inverted: %b), rightSpeed=%.2f (Inverted: %b), topSpeed=%.2f (Inverted: %b)",
-			leftSpeed, leftMotor.getInverted(), rightSpeed, rightMotor.getInverted(), topSpeed, topMotor.getInverted()), 
-			false);
+		LoggingManager.log(String.format(
+				"Running intake: leftSpeed=%.2f (Inverted: %b), rightSpeed=%.2f (Inverted: %b), topSpeed=%.2f (Inverted: %b)",
+				leftSpeed,
+				leftMotor.getInverted(),
+				rightSpeed,
+				rightMotor.getInverted(),
+				topSpeed,
+				topMotor.getInverted()
+			), 
+			MessageType.DEBUG
+		);
 
-		// if (!getLimitButton()) {
-		leftMotor.set(leftSpeed);
-		rightMotor.set(rightSpeed);
-		topMotor.set(topSpeed);
-		// } else {
-		// stopIntake();
-		// }
+		if (!getLimitButton()) {
+			leftMotor.set(leftSpeed);
+			rightMotor.set(rightSpeed);
+			topMotor.set(topSpeed);
+		} else {
+			stopIntake();
+		}
 	}
 
 	public void runIntakeOut() {
-		DriverStation.reportWarning(
-			String.format("Running intake out: leftSpeed=%.2f (Inverted: %b), rightSpeed=%.2f (Inverted: %b), topSpeed=%.2f (Inverted: %b)",
-			leftSpeed, leftMotor.getInverted(), rightSpeed, rightMotor.getInverted(), topSpeed, topMotor.getInverted()), 
-			false);
+		LoggingManager.log(String.format(
+				"Running intake out: leftSpeed=%.2f (Inverted: %b), rightSpeed=%.2f (Inverted: %b), topSpeed=%.2f (Inverted: %b)",
+				leftSpeed, 
+				leftMotor.getInverted(), 
+				rightSpeed, 
+				rightMotor.getInverted(), 
+				topSpeed,
+				topMotor.getInverted()
+			), 
+			MessageType.DEBUG
+		);
 
 		leftMotor.set(-leftSpeed);
 		rightMotor.set(-rightSpeed);
@@ -71,7 +86,7 @@ public class IntakeSubsystem extends SubsystemBase {
 	}
 
 	public void stopIntake() {
-		DriverStation.reportWarning("Intake stopped", false);
+		LoggingManager.log("Intake stopped", MessageType.DEBUG);
 
 		leftMotor.set(0);
 		rightMotor.set(0);

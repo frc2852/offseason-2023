@@ -28,8 +28,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 // Local imports
 import frc.robot.Constants.VisionConstants;
+import frc.robot.util.RobotManager;
 import frc.robot.util.models.AprilTagTracker;
-import frc.robot.util.models.ConfigManager;
 
 public class VisionTrackingSubsystem extends SubsystemBase {
 
@@ -108,7 +108,7 @@ public class VisionTrackingSubsystem extends SubsystemBase {
 	}
 
 	private String getRelevantTagIdForAlliance(AprilTagTracker tracker) {
-		switch (ConfigManager.getAlliance()) {
+		switch (RobotManager.getAlliance()) {
 			case Red:
 				return tracker.redAprilTagId;
 			case Blue:

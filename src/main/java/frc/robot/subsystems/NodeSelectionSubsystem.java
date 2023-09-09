@@ -7,10 +7,11 @@ package frc.robot.subsystems;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.util.models.ConfigManager;
+import frc.robot.util.LoggingManager;
+import frc.robot.util.RobotManager;
+import frc.robot.util.LoggingManager.MessageType;
 import frc.robot.util.models.Node;
 
 public class NodeSelectionSubsystem extends SubsystemBase {
@@ -58,13 +59,13 @@ public class NodeSelectionSubsystem extends SubsystemBase {
 
 	public String getSelectedAprilTagId() {
 		Node zone = getSelectedZone();
-		switch (ConfigManager.getAlliance()) {
+		switch (RobotManager.getAlliance()) {
 			case Red:
 				return zone.redAprilTagId;
 			case Blue:
 				return zone.blueAprilTagId;
 			default: {
-				DriverStation.reportError("Attempted to selected a Node without a valid alliance selected", false);
+				LoggingManager.log("Attempted to selected a Node without a valid alliance selected", MessageType.ERROR);
 				return null;
 			}
 		}
