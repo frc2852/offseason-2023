@@ -20,6 +20,24 @@ public final class Constants {
 	public static final int INTAKE_RIGHT = 14;
 	public static final int INTAKE_TOP = 15;
 
+	public static final int PIVOT_LEADER = 16;
+	public static final int PIVOT_FOLLOWER = 17;
+
+    // PID Constants
+    public static final double PIVOT_P = 0.1; // Proportional gain
+    public static final double PIVOT_I = 0.0; // Integral gain
+    public static final double PIVOT_D = 0.0; // Derivative gain
+    public static final double PIVOT_IZONE = 0.0; // Integral zone
+    public static final double PIVOT_FF = 0.0; // Feedforward gain
+    
+    // PID Output Range
+    public static final double PIVOT_MIN_OUTPUT = -1.0; // Minimum output value for the PID controller
+    public static final double PIVOT_MAX_OUTPUT = 1.0; // Maximum output value for the PID controller
+    
+    // Encoder Resolution
+    public static final int ENCODER_RESOLUTION = 4096; // Counts per revolution for the encoder
+    
+
 	public static class VisionConstants {
 		public static final Transform3d robotToCam = new Transform3d(
 				new Translation3d(0.5, 0.0, 0.5),

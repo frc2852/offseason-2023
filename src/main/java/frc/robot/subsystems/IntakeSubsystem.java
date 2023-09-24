@@ -59,7 +59,7 @@ public class IntakeSubsystem extends SubsystemBase {
 			MessageType.DEBUG
 		);
 
-		if (getLimitButton()) {
+		if (isCubeFullyIntaked()) {
 			leftMotor.set(wheelsIntakeMaxSpeed);
 			rightMotor.set(wheelsIntakeMaxSpeed);
 			topMotor.set(rollerIntakeMaxSpeed);
@@ -93,7 +93,7 @@ public class IntakeSubsystem extends SubsystemBase {
 		topMotor.set(0);
 	}
 
-	public boolean getLimitButton() {
+	public boolean isCubeFullyIntaked() {
 		return limitSwitch.get();
 	}
 
