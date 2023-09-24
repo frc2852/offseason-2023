@@ -31,8 +31,8 @@ public final class Constants {
     public static final double PIVOT_FF = 0.0; // Feedforward gain
     
     // PID Output Range
-    public static final double PIVOT_MIN_OUTPUT = -1.0; // Minimum output value for the PID controller
-    public static final double PIVOT_MAX_OUTPUT = 1.0; // Maximum output value for the PID controller
+    public static final double PIVOT_MIN_OUTPUT = -0.2; // Minimum output value for the PID controller
+    public static final double PIVOT_MAX_OUTPUT = 0.2; // Maximum output value for the PID controller
     
     // Encoder Resolution
     public static final int ENCODER_RESOLUTION = 4096; // Counts per revolution for the encoder

@@ -18,6 +18,7 @@ import frc.robot.commands.VisionTracking.CycleGridRight;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.NodeSelectionSubsystem;
+import frc.robot.subsystems.PivotSubsystem;
 import frc.robot.subsystems.VisionTrackingSubsystem;
 
 public class RobotContainer {
@@ -25,7 +26,8 @@ public class RobotContainer {
 	// Subsystems
 	private final DriveSubsystem mDriveSubsystem = new DriveSubsystem();
 	private final IntakeSubsystem mIntakeSubsystem = new IntakeSubsystem();
-
+	private final PivotSubsystem mPivotSubsystem = new PivotSubsystem();
+	
 	private final NodeSelectionSubsystem mNodeSelectionSubsystem = new NodeSelectionSubsystem();
 	private final VisionTrackingSubsystem mVisionTrackingSubsystem = new VisionTrackingSubsystem();
 

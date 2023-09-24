@@ -42,19 +42,18 @@ public class PivotSubsystem extends SubsystemBase {
 		pivotLeader.restoreFactoryDefaults();
 		pivotLeader.setIdleMode(IdleMode.kBrake);
 		pivotLeader.setInverted(false);
-		pivotLeader.setSmartCurrentLimit(0);
+		// pivotLeader.setSmartCurrentLimit(20);
 
 		pivotFollower.restoreFactoryDefaults();
 		pivotFollower.follow(pivotLeader);
 		pivotFollower.setIdleMode(IdleMode.kBrake);
-		pivotFollower.setInverted(false);
-		pivotFollower.setSmartCurrentLimit(0);
+		pivotFollower.setInverted(true);
+		// pivotFollower.setSmartCurrentLimit(20);
 	}
 
 	private void configurePID() {
 		pivotEncoder.setInverted(false);
-		// pivotEncoder.setPositionConversionFactor(1);
-		// pivotEncoder.setVelocityConversionFactor(1);
+		pivotEncoder.setPositionConversionFactor(360);
 
 		pivotPIDController.setPositionPIDWrappingEnabled(false);
 		pivotPIDController.setP(Constants.PIVOT_P);
@@ -72,19 +71,14 @@ public class PivotSubsystem extends SubsystemBase {
 	}
 
 	public void setAngle(double angle) {
-		// double position = angleToPosition(angle); // Convert the desired angle to position
 		pivotPIDController.setReference(angle, ControlType.kPosition);
-	}
-	
-	private double angleToPosition(double angle) {
-		// Convert angle in degrees to radians first, and then convert to position
-		double angleInRadians = Math.toRadians(angle);
-		return angleInRadians * (Constants.ENCODER_RESOLUTION / (2 * Math.PI));
 	}
 	
 	
 	@Override
 	public void periodic() {
+		SmartDashboard.putNumber("ActualPosition", pivotEncoder.getPosition());
+		SmartDashboard.putNumber("PositionConversion", pivotEncoder.getPositionConversionFactor());
 		position = SmartDashboard.getNumber("Position", 0);
 		setAngle(position);
 	}
