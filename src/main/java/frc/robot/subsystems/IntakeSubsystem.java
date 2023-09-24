@@ -5,10 +5,10 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.util.LoggingManager;
@@ -21,47 +21,48 @@ public class IntakeSubsystem extends SubsystemBase {
 	private CANSparkMax topMotor;
 	private DigitalInput limitSwitch;
 
-	private double leftSpeed = 0.5;
-	private double rightSpeed = 0.5;
-	private double topSpeed = 0.5;
+	private double wheelsIntakeMaxSpeed = 0.35;
+	private double rollerIntakeMaxSpeed = 0.35;
 
-	// Variables to store the previous inversion state
-	private boolean prevInvertLeft = false;
-	private boolean prevInvertRight = false;
-	private boolean prevInvertTop = false;
+	private double wheelsShootMaxSpeed = 1;
+	private double rollerShooteMaxSpeed = 1;
 
 	public IntakeSubsystem() {
 		leftMotor = new CANSparkMax(Constants.INTAKE_LEFT, MotorType.kBrushless);
+		leftMotor.setInverted(true);
+		leftMotor.setIdleMode(IdleMode.kCoast);
+
 		rightMotor = new CANSparkMax(Constants.INTAKE_RIGHT, MotorType.kBrushless);
+		rightMotor.setInverted(false);
+		rightMotor.setIdleMode(IdleMode.kCoast);
+
 		topMotor = new CANSparkMax(Constants.INTAKE_TOP, MotorType.kBrushless);
+		topMotor.setInverted(true);
+		topMotor.setIdleMode(IdleMode.kCoast);
+
+		leftMotor.burnFlash();
+		rightMotor.burnFlash();
+		topMotor.burnFlash();
+
 		limitSwitch = new DigitalInput(0);
-
-		SmartDashboard.putBoolean("Invert Left Motor", false);
-		SmartDashboard.putBoolean("Invert Right Motor", false);
-		SmartDashboard.putBoolean("Invert Top Motor", false);
-
-		SmartDashboard.putNumber("Left Motor Speed", leftSpeed);
-		SmartDashboard.putNumber("Right Motor Speed", rightSpeed);
-		SmartDashboard.putNumber("Top Motor Speed", topSpeed);
 	}
 
 	public void runIntakeIn() {
 		LoggingManager.log(String.format(
-				"Running intake: leftSpeed=%.2f (Inverted: %b), rightSpeed=%.2f (Inverted: %b), topSpeed=%.2f (Inverted: %b)",
-				leftSpeed,
+				"Running intake: WheelSpeed=%.2f (Inverted: %b)-(Inverted: %b), RollerSpeed=%.2f (Inverted: %b)",
+				wheelsIntakeMaxSpeed,
 				leftMotor.getInverted(),
-				rightSpeed,
 				rightMotor.getInverted(),
-				topSpeed,
+				rollerIntakeMaxSpeed,
 				topMotor.getInverted()
 			), 
 			MessageType.DEBUG
 		);
 
-		if (!getLimitButton()) {
-			leftMotor.set(leftSpeed);
-			rightMotor.set(rightSpeed);
-			topMotor.set(topSpeed);
+		if (getLimitButton()) {
+			leftMotor.set(wheelsIntakeMaxSpeed);
+			rightMotor.set(wheelsIntakeMaxSpeed);
+			topMotor.set(rollerIntakeMaxSpeed);
 		} else {
 			stopIntake();
 		}
@@ -69,20 +70,19 @@ public class IntakeSubsystem extends SubsystemBase {
 
 	public void runIntakeOut() {
 		LoggingManager.log(String.format(
-				"Running intake out: leftSpeed=%.2f (Inverted: %b), rightSpeed=%.2f (Inverted: %b), topSpeed=%.2f (Inverted: %b)",
-				leftSpeed, 
+				"Running intake out: WheelSpeed=%.2f (Inverted: %b)-(Inverted: %b), RollerSpeed=%.2f (Inverted: %b)",
+				wheelsIntakeMaxSpeed, 
 				leftMotor.getInverted(), 
-				rightSpeed, 
 				rightMotor.getInverted(), 
-				topSpeed,
+				rollerIntakeMaxSpeed,
 				topMotor.getInverted()
 			), 
 			MessageType.DEBUG
 		);
 
-		leftMotor.set(-leftSpeed);
-		rightMotor.set(-rightSpeed);
-		topMotor.set(-topSpeed);
+		leftMotor.set(-wheelsShootMaxSpeed);
+		rightMotor.set(-wheelsShootMaxSpeed);
+		topMotor.set(-rollerShooteMaxSpeed);
 	}
 
 	public void stopIntake() {
@@ -99,26 +99,6 @@ public class IntakeSubsystem extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		boolean invertLeft = SmartDashboard.getBoolean("Invert Left Motor", false);
-		boolean invertRight = SmartDashboard.getBoolean("Invert Right Motor", false);
-		boolean invertTop = SmartDashboard.getBoolean("Invert Top Motor", false);
 
-		leftSpeed = SmartDashboard.getNumber("Left Motor Speed", 0.5);
-		rightSpeed = SmartDashboard.getNumber("Right Motor Speed", 0.5);
-		topSpeed = SmartDashboard.getNumber("Top Motor Speed", 0.5);
-
-		// Only update if the value has changed
-		if (invertLeft != prevInvertLeft) {
-			leftMotor.setInverted(invertLeft);
-			prevInvertLeft = invertLeft;
-		}
-		if (invertRight != prevInvertRight) {
-			rightMotor.setInverted(invertRight);
-			prevInvertRight = invertRight;
-		}
-		if (invertTop != prevInvertTop) {
-			topMotor.setInverted(invertTop);
-			prevInvertTop = invertTop;
-		}
 	}
 }

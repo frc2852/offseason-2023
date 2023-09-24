@@ -23,7 +23,11 @@ import frc.robot.subsystems.VisionTrackingSubsystem;
 public class RobotContainer {
 
 	// Subsystems
-	public final DriveSubsystem m_robotDrive = new DriveSubsystem();
+	private final DriveSubsystem mDriveSubsystem = new DriveSubsystem();
+	private final IntakeSubsystem mIntakeSubsystem = new IntakeSubsystem();
+
+	private final NodeSelectionSubsystem mNodeSelectionSubsystem = new NodeSelectionSubsystem();
+	private final VisionTrackingSubsystem mVisionTrackingSubsystem = new VisionTrackingSubsystem();
 
 	CommandPS4Controller driverController = new CommandPS4Controller(0);
 
@@ -31,9 +35,7 @@ public class RobotContainer {
 	private final SlewRateLimiter m_speedLimiter = new SlewRateLimiter(3);
 	private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
 
-	private final NodeSelectionSubsystem mNodeSelectionSubsystem = new NodeSelectionSubsystem();
-	private final VisionTrackingSubsystem mVisionTrackingSubsystem = new VisionTrackingSubsystem();
-	private final IntakeSubsystem mIntakeSubsystem = new IntakeSubsystem();
+
 
 	public RobotContainer() {
 		configureBindings();
@@ -42,16 +44,16 @@ public class RobotContainer {
 	private void configureBindings() {
 		// The left stick controls translation of the robot.
 		// Turning is controlled by the X axis of the right stick.
-		m_robotDrive.setDefaultCommand(
+		mDriveSubsystem.setDefaultCommand(
 				// The left stick controls translation of the robot.
 				// Turning is controlled by the X axis of the right stick.
 				new RunCommand(
-						() -> m_robotDrive.drive(
+						() -> mDriveSubsystem.drive(
 								-MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
 								-MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
 								-MathUtil.applyDeadband(driverController.getRightX(), OIConstants.kDriveDeadband),
 								true, true),
-						m_robotDrive));
+						mDriveSubsystem));
 
 		driverController.L1().onTrue(new CycleGridLeft(mNodeSelectionSubsystem));
 		driverController.R1().onTrue(new CycleGridRight(mNodeSelectionSubsystem));
@@ -61,8 +63,8 @@ public class RobotContainer {
 
 		driverController.circle()
 				.whileTrue(new RunCommand(
-						() -> m_robotDrive.setX(),
-						m_robotDrive));
+						() -> mDriveSubsystem.setX(),
+						mDriveSubsystem));
 	}
 
 	public Command getAutonomousCommand() {
