@@ -10,7 +10,7 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
+import frc.robot.Constants.CanbusId;
 import frc.robot.util.LoggingManager;
 import frc.robot.util.LoggingManager.MessageType;
 
@@ -28,15 +28,16 @@ public class IntakeSubsystem extends SubsystemBase {
 	private double rollerShooteMaxSpeed = 1;
 
 	public IntakeSubsystem() {
-		leftMotor = new CANSparkMax(Constants.INTAKE_LEFT, MotorType.kBrushless);
+
+		leftMotor = new CANSparkMax(CanbusId.INTAKE_LEFT, MotorType.kBrushless);
 		leftMotor.setInverted(true);
 		leftMotor.setIdleMode(IdleMode.kCoast);
 
-		rightMotor = new CANSparkMax(Constants.INTAKE_RIGHT, MotorType.kBrushless);
+		rightMotor = new CANSparkMax(CanbusId.INTAKE_RIGHT, MotorType.kBrushless);
 		rightMotor.setInverted(false);
 		rightMotor.setIdleMode(IdleMode.kCoast);
 
-		topMotor = new CANSparkMax(Constants.INTAKE_TOP, MotorType.kBrushless);
+		topMotor = new CANSparkMax(CanbusId.INTAKE_TOP, MotorType.kBrushless);
 		topMotor.setInverted(true);
 		topMotor.setIdleMode(IdleMode.kCoast);
 
@@ -54,10 +55,8 @@ public class IntakeSubsystem extends SubsystemBase {
 				leftMotor.getInverted(),
 				rightMotor.getInverted(),
 				rollerIntakeMaxSpeed,
-				topMotor.getInverted()
-			), 
-			MessageType.DEBUG
-		);
+				topMotor.getInverted()),
+				MessageType.DEBUG);
 
 		if (isCubeFullyIntaked()) {
 			leftMotor.set(wheelsIntakeMaxSpeed);
@@ -71,14 +70,12 @@ public class IntakeSubsystem extends SubsystemBase {
 	public void runIntakeOut() {
 		LoggingManager.log(String.format(
 				"Running intake out: WheelSpeed=%.2f (Inverted: %b)-(Inverted: %b), RollerSpeed=%.2f (Inverted: %b)",
-				wheelsIntakeMaxSpeed, 
-				leftMotor.getInverted(), 
-				rightMotor.getInverted(), 
+				wheelsIntakeMaxSpeed,
+				leftMotor.getInverted(),
+				rightMotor.getInverted(),
 				rollerIntakeMaxSpeed,
-				topMotor.getInverted()
-			), 
-			MessageType.DEBUG
-		);
+				topMotor.getInverted()),
+				MessageType.DEBUG);
 
 		leftMotor.set(-wheelsShootMaxSpeed);
 		rightMotor.set(-wheelsShootMaxSpeed);

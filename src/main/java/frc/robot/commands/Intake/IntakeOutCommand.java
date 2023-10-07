@@ -9,23 +9,23 @@ import frc.robot.subsystems.IntakeSubsystem;
 
 public class IntakeOutCommand extends CommandBase {
 
-  private final IntakeSubsystem mIntakeSubsystem;
+  private final IntakeSubsystem intakeSubsystem;
 
   public IntakeOutCommand(IntakeSubsystem intakeSubsystem) {
-    mIntakeSubsystem = intakeSubsystem;
+    this.intakeSubsystem = intakeSubsystem;
     addRequirements(intakeSubsystem);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    mIntakeSubsystem.runIntakeOut();
+    intakeSubsystem.runIntakeOut();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    mIntakeSubsystem.stopIntake();
+    intakeSubsystem.stopIntake();
   }
 
   // Returns true when the command should end.

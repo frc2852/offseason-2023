@@ -11,8 +11,8 @@ public class NavX {
 
     // Constructor initializes the AHRS (gyro sensor)
     public NavX() {
-      navX = new AHRS(SerialPort.Port.kMXP);
-      zeroYaw();
+        navX = new AHRS(SerialPort.Port.kMXP);
+        zeroYaw();
     }
 
     /**

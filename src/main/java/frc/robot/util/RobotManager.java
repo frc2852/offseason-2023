@@ -17,8 +17,8 @@ public class RobotManager {
     public static void performStartupChecks() {
         allianceColor = DriverStation.getAlliance();
         if (allianceColor == Alliance.Invalid) {
-			DriverStation.reportError("Unable to retrieve the alliance from FMS", false);
-		}
+            DriverStation.reportError("Unable to retrieve the alliance from FMS", false);
+        }
 
         isSimulation = RobotBase.isSimulation();
     }
@@ -28,7 +28,7 @@ public class RobotManager {
         return allianceColor;
     }
 
-    public static boolean isSimulation(){
+    public static boolean isSimulation() {
         return isSimulation;
     }
 }

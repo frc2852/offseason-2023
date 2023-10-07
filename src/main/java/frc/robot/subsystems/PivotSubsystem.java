@@ -23,11 +23,12 @@ public class PivotSubsystem extends SubsystemBase {
 
 	private final CANSparkMax pivotFollower;
 	private final SparkMaxPIDController pivotPIDController;
-	
+
 	private double position = 0;
+
 	public PivotSubsystem() {
-		pivotLeader = new CANSparkMax(Constants.PIVOT_LEADER, MotorType.kBrushless);
-		pivotFollower = new CANSparkMax(Constants.PIVOT_FOLLOWER, MotorType.kBrushless);
+		pivotLeader = new CANSparkMax(Constants.CanbusId.PIVOT_LEADER, MotorType.kBrushless);
+		pivotFollower = new CANSparkMax(Constants.CanbusId.PIVOT_FOLLOWER, MotorType.kBrushless);
 		pivotEncoder = pivotLeader.getAbsoluteEncoder(Type.kDutyCycle);
 		pivotPIDController = pivotLeader.getPIDController();
 
@@ -56,13 +57,18 @@ public class PivotSubsystem extends SubsystemBase {
 		pivotEncoder.setPositionConversionFactor(360);
 
 		pivotPIDController.setPositionPIDWrappingEnabled(false);
-		pivotPIDController.setP(Constants.PIVOT_P);
-		pivotPIDController.setI(Constants.PIVOT_I);
-		pivotPIDController.setD(Constants.PIVOT_D);
-		pivotPIDController.setIZone(Constants.PIVOT_IZONE);
-		pivotPIDController.setFF(Constants.PIVOT_FF);
-		pivotPIDController.setOutputRange(Constants.PIVOT_MIN_OUTPUT, Constants.PIVOT_MAX_OUTPUT);
+		pivotPIDController.setP(Constants.Pivot.P);
+		pivotPIDController.setI(Constants.Pivot.I);
+		pivotPIDController.setD(Constants.Pivot.D);
+		pivotPIDController.setIZone(Constants.Pivot.IZONE);
+		pivotPIDController.setFF(Constants.Pivot.FF);
+		pivotPIDController.setOutputRange(Constants.Pivot.MIN_OUTPUT, Constants.Pivot.MAX_OUTPUT);
 		pivotPIDController.setFeedbackDevice(pivotEncoder);
+
+		// pivotPIDController.setSmartMotionAccelStrategy(null, 0)
+		// pivotPIDController.setSmartMotionAllowedClosedLoopError(position, 0)
+		// pivotPIDController.setSmartMotionMaxAccel(position, 0)
+		// pivotPIDController.setSmartMotionMaxVelocity(position, 0)
 	}
 
 	private void burnFlash() {
@@ -71,10 +77,10 @@ public class PivotSubsystem extends SubsystemBase {
 	}
 
 	public void setAngle(double angle) {
+		// Add the feed-forward term to the PID controller’s output
 		pivotPIDController.setReference(angle, ControlType.kPosition);
 	}
-	
-	
+
 	@Override
 	public void periodic() {
 		SmartDashboard.putNumber("ActualPosition", pivotEncoder.getPosition());

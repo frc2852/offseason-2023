@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
-import frc.robot.Constants.OIConstants;
+import frc.robot.Constants.OI;
 import frc.robot.commands.Intake.IntakeCommand;
 import frc.robot.commands.Intake.IntakeOutCommand;
 import frc.robot.commands.VisionTracking.CycleGridLeft;
@@ -24,20 +24,18 @@ import frc.robot.subsystems.VisionTrackingSubsystem;
 public class RobotContainer {
 
 	// Subsystems
-	private final DriveSubsystem mDriveSubsystem = new DriveSubsystem();
-	private final IntakeSubsystem mIntakeSubsystem = new IntakeSubsystem();
-	private final PivotSubsystem mPivotSubsystem = new PivotSubsystem();
-	
-	private final NodeSelectionSubsystem mNodeSelectionSubsystem = new NodeSelectionSubsystem();
-	private final VisionTrackingSubsystem mVisionTrackingSubsystem = new VisionTrackingSubsystem();
+	private final DriveSubsystem driveSubsystem = new DriveSubsystem();
+	private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
+	private final PivotSubsystem pivotSubsystem = new PivotSubsystem();
 
-	CommandPS4Controller driverController = new CommandPS4Controller(0);
+	private final NodeSelectionSubsystem nodeSelectionSubsystem = new NodeSelectionSubsystem();
+	private final VisionTrackingSubsystem visionTrackingSubsystem = new VisionTrackingSubsystem();
+
+	CommandPS4Controller driverController = new CommandPS4Controller(Constants.OI.DRIVER_CONTROLLER_PORT);
 
 	// Slew rate limiters to make joystick inputs more gentle; 1/3 sec from 0 to 1.
-	private final SlewRateLimiter m_speedLimiter = new SlewRateLimiter(3);
-	private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
-
-
+	private final SlewRateLimiter speedLimiter = new SlewRateLimiter(3);
+	private final SlewRateLimiter rotLimiter = new SlewRateLimiter(3);
 
 	public RobotContainer() {
 		configureBindings();
@@ -46,27 +44,27 @@ public class RobotContainer {
 	private void configureBindings() {
 		// The left stick controls translation of the robot.
 		// Turning is controlled by the X axis of the right stick.
-		mDriveSubsystem.setDefaultCommand(
+		driveSubsystem.setDefaultCommand(
 				// The left stick controls translation of the robot.
 				// Turning is controlled by the X axis of the right stick.
 				new RunCommand(
-						() -> mDriveSubsystem.drive(
-								-MathUtil.applyDeadband(driverController.getLeftY(), OIConstants.kDriveDeadband),
-								-MathUtil.applyDeadband(driverController.getLeftX(), OIConstants.kDriveDeadband),
-								-MathUtil.applyDeadband(driverController.getRightX(), OIConstants.kDriveDeadband),
+						() -> driveSubsystem.drive(
+								-MathUtil.applyDeadband(driverController.getLeftY(), OI.DRIVE_DEAD_BAND),
+								-MathUtil.applyDeadband(driverController.getLeftX(), OI.DRIVE_DEAD_BAND),
+								-MathUtil.applyDeadband(driverController.getRightX(), OI.DRIVE_DEAD_BAND),
 								true, true),
-						mDriveSubsystem));
+						driveSubsystem));
 
-		driverController.L1().onTrue(new CycleGridLeft(mNodeSelectionSubsystem));
-		driverController.R1().onTrue(new CycleGridRight(mNodeSelectionSubsystem));
+		driverController.L1().onTrue(new CycleGridLeft(nodeSelectionSubsystem));
+		driverController.R1().onTrue(new CycleGridRight(nodeSelectionSubsystem));
 
-		driverController.triangle().whileTrue(new IntakeOutCommand(mIntakeSubsystem));
-		driverController.cross().whileTrue(new IntakeCommand(mIntakeSubsystem));
+		driverController.triangle().whileTrue(new IntakeOutCommand(intakeSubsystem));
+		driverController.cross().whileTrue(new IntakeCommand(intakeSubsystem));
 
 		driverController.circle()
 				.whileTrue(new RunCommand(
-						() -> mDriveSubsystem.setX(),
-						mDriveSubsystem));
+						() -> driveSubsystem.setX(),
+						driveSubsystem));
 	}
 
 	public Command getAutonomousCommand() {

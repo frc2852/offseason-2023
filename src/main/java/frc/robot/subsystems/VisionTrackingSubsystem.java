@@ -27,7 +27,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 // Local imports
-import frc.robot.Constants.VisionConstants;
+import frc.robot.Constants.Vision;
 import frc.robot.util.RobotManager;
 import frc.robot.util.models.AprilTagTracker;
 
@@ -40,7 +40,7 @@ public class VisionTrackingSubsystem extends SubsystemBase {
 
 	// Constructor
 	public VisionTrackingSubsystem() {
-		photonCamera = new PhotonCamera(VisionConstants.cameraName);
+		photonCamera = new PhotonCamera(Vision.CAMERA_NAME);
 		aprilTagTrackers = initializeAprilTagTrackers();
 		initializePhotonPoseEstimator();
 	}
@@ -61,7 +61,7 @@ public class VisionTrackingSubsystem extends SubsystemBase {
 					fieldLayout,
 					PoseStrategy.MULTI_TAG_PNP,
 					photonCamera,
-					VisionConstants.robotToCam);
+					Vision.ROBOT_TO_CAM);
 			photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 		} catch (IOException e) {
 			DriverStation.reportError("Failed to load AprilTagFieldLayout", e.getStackTrace());
