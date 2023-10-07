@@ -35,7 +35,7 @@ public class MAXSwerveModule {
    * MAXSwerve Module built with NEOs, SPARKS MAX, and a Through Bore
    * Encoder.
    */
-  public MAXSwerveModule(int drivingCANId, int turningCANId, double chassisAngularOffset, boolean invert) {
+  public MAXSwerveModule(int drivingCANId, int turningCANId, double newChassisAngularOffset, boolean invert) {
     drivingSparkMax = new CANSparkMax(drivingCANId, MotorType.kBrushless);
     turningSparkMax = new CANSparkMax(turningCANId, MotorType.kBrushless);
 
@@ -108,7 +108,7 @@ public class MAXSwerveModule {
     drivingSparkMax.burnFlash();
     turningSparkMax.burnFlash();
 
-    chassisAngularOffset = chassisAngularOffset;
+    chassisAngularOffset = newChassisAngularOffset;
     desiredState.angle = new Rotation2d(turningEncoder.getPosition());
     drivingEncoder.setPosition(0);
   }
@@ -143,11 +143,11 @@ public class MAXSwerveModule {
    *
    * @param desiredState Desired state with speed and angle.
    */
-  public void setDesiredState(SwerveModuleState desiredState) {
+  public void setDesiredState(SwerveModuleState newDesiredState) {
     // Apply chassis angular offset to the desired state.
     SwerveModuleState correctedDesiredState = new SwerveModuleState();
-    correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
-    correctedDesiredState.angle = desiredState.angle.plus(Rotation2d.fromRadians(chassisAngularOffset));
+    correctedDesiredState.speedMetersPerSecond = newDesiredState.speedMetersPerSecond;
+    correctedDesiredState.angle = newDesiredState.angle.plus(Rotation2d.fromRadians(chassisAngularOffset));
 
     // Optimize the reference state to avoid spinning further than 90 degrees.
     SwerveModuleState optimizedDesiredState = SwerveModuleState.optimize(correctedDesiredState,
@@ -157,7 +157,7 @@ public class MAXSwerveModule {
     drivingPIDController.setReference(optimizedDesiredState.speedMetersPerSecond, CANSparkMax.ControlType.kVelocity);
     turningPIDController.setReference(optimizedDesiredState.angle.getRadians(), CANSparkMax.ControlType.kPosition);
 
-    desiredState = desiredState;
+    desiredState = newDesiredState;
   }
 
   /** Zeroes all the SwerveModule encoders. */
