@@ -87,7 +87,8 @@ public class PivotSubsystem extends SubsystemBase {
 		pivotEncoder.setInverted(false);
 		pivotEncoder.setPositionConversionFactor(360);
 
-		pivotPIDController.setPositionPIDWrappingEnabled(false);
+		pivotPIDController.setPositionPIDWrappingEnabled(true);
+
 		pivotPIDController.setP(Constants.Pivot.P);
 		pivotPIDController.setI(Constants.Pivot.I);
 		pivotPIDController.setD(Constants.Pivot.D);
@@ -103,7 +104,17 @@ public class PivotSubsystem extends SubsystemBase {
 	}
 
 	public void setAngle(double angle) {
-		// Add the feed-forward term to the PID controller’s output
+		if (angle > 105 && angle < 200) {
+			position = 105;
+		} else if (angle < 0 || angle >= 200) {
+			position = 0;
+		}
+
+		if (pivotEncoder.getPosition() > 300) {
+			position = 10;
+		}
+
+		angle = position;
 		pivotPIDController.setReference(angle, ControlType.kPosition);
 	}
 

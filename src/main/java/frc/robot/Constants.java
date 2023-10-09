@@ -34,8 +34,8 @@ public final class Constants {
   }
 
   public static final class Pivot {
-    public static final double P = 0.1, I = 0.0, D = 0.0, IZONE = 0.0, FF = 0.0;
-    public static final double MIN_OUTPUT = -0.2, MAX_OUTPUT = 0.2;
+    public static final double P = 0.011, I = 0.0000000045, D = 0.0000000001, IZONE = 0.0, FF = 0.000156;
+    public static final double MIN_OUTPUT = -0.2, MAX_OUTPUT = 0.15;
   }
 
   public static class Vision {
