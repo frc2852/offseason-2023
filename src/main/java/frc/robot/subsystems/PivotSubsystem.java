@@ -76,6 +76,9 @@ public class PivotSubsystem extends SubsystemBase {
 	private void configurePID() {
 		pivotEncoder.setInverted(false);
 		pivotEncoder.setPositionConversionFactor(360);
+		
+		double currentOffset = pivotEncoder.getZeroOffset();
+		pivotEncoder.setZeroOffset(currentOffset + 10);
 
 		pivotPIDController.setP(Constants.Pivot.P);
 		pivotPIDController.setI(Constants.Pivot.I);
