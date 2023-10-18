@@ -36,6 +36,13 @@ public final class Constants {
   public static final class Pivot {
     public static final double P = 0.011, I = 0.0000000045, D = 0.0000000001, IZONE = 0.0, FF = 0.000156;
     public static final double MIN_OUTPUT = -0.2, MAX_OUTPUT = 0.15;
+
+    //PIVOT Positions
+    public static final double DRIVE = 0;
+    public static final double PICK_UP = 100;
+    public static final double LOW_SCORE = 90;
+    public static final double MID_SCORE = 75;
+    public static final double HIGH_SCORE = 50;
   }
 
   public static class Vision {

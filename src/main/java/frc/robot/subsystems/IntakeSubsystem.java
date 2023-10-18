@@ -10,16 +10,19 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 import frc.robot.Constants.CanbusId;
 import frc.robot.util.LoggingManager;
 import frc.robot.util.LoggingManager.MessageType;
 
 public class IntakeSubsystem extends SubsystemBase {
 
+	private final PivotSubsystem pivotSubsystem;
+
 	private CANSparkMax leftMotor;
 	private CANSparkMax rightMotor;
 	private CANSparkMax topMotor;
-	private DigitalInput limitSwitch;
+	private DigitalInput intakeLimitSwitch;
 
 	private double wheelsIntakeMaxSpeed = 0.35;
 	private double rollerIntakeMaxSpeed = 0.35;
@@ -27,7 +30,8 @@ public class IntakeSubsystem extends SubsystemBase {
 	private double wheelsShootMaxSpeed = 1;
 	private double rollerShooteMaxSpeed = 1;
 
-	public IntakeSubsystem() {
+	public IntakeSubsystem(PivotSubsystem pivotSubsystem) {
+		this.pivotSubsystem = pivotSubsystem;
 
 		leftMotor = new CANSparkMax(CanbusId.INTAKE_LEFT, MotorType.kBrushless);
 		leftMotor.setInverted(true);
@@ -45,7 +49,7 @@ public class IntakeSubsystem extends SubsystemBase {
 		rightMotor.burnFlash();
 		topMotor.burnFlash();
 
-		limitSwitch = new DigitalInput(0);
+		intakeLimitSwitch = new DigitalInput(0);
 	}
 
 	public void runIntakeIn() {
@@ -58,12 +62,13 @@ public class IntakeSubsystem extends SubsystemBase {
 				topMotor.getInverted()),
 				MessageType.DEBUG);
 
-		if (isCubeFullyIntaked()) {
+		if (isCubeIntakeComplete()) {
+			stopIntake();
+			pivotSubsystem.setAngle(Constants.Pivot.DRIVE);
+		} else {
 			leftMotor.set(wheelsIntakeMaxSpeed);
 			rightMotor.set(wheelsIntakeMaxSpeed);
 			topMotor.set(rollerIntakeMaxSpeed);
-		} else {
-			stopIntake();
 		}
 	}
 
@@ -84,14 +89,13 @@ public class IntakeSubsystem extends SubsystemBase {
 
 	public void stopIntake() {
 		LoggingManager.log("Intake stopped", MessageType.DEBUG);
-
 		leftMotor.set(0);
 		rightMotor.set(0);
 		topMotor.set(0);
 	}
 
-	public boolean isCubeFullyIntaked() {
-		return limitSwitch.get();
+	public boolean isCubeIntakeComplete() {
+		return !intakeLimitSwitch.get();
 	}
 
 	@Override

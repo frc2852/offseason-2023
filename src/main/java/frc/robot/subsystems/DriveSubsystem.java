@@ -195,7 +195,7 @@ public class DriveSubsystem extends SubsystemBase {
   /**
    * Sets the wheels into an X formation to prevent movement.
    */
-  public void setX() {
+  public void lockDrive() {
     frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
     frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
     rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));

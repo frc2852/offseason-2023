@@ -4,19 +4,15 @@
 
 package frc.robot.subsystems;
 
-import java.util.logging.LogManager;
-
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.SparkMaxLimitSwitch;
 import com.revrobotics.SparkMaxPIDController;
 import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.SparkMaxAbsoluteEncoder.Type;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -24,17 +20,18 @@ import frc.robot.util.LoggingManager;
 import frc.robot.util.LoggingManager.MessageType;
 
 public class PivotSubsystem extends SubsystemBase {
-
 	private final CANSparkMax pivotLeader;
-	private AbsoluteEncoder pivotEncoder;
-
 	private final CANSparkMax pivotFollower;
+	
 	private final SparkMaxPIDController pivotPIDController;
+	private AbsoluteEncoder pivotEncoder;
 
 	private double position = 0;
 
 	private final SparkMaxLimitSwitch forwardLimit;
 	private final SparkMaxLimitSwitch reverseLimit;
+
+	private final boolean DEBUG = false;
 
 	public PivotSubsystem() {
 		pivotLeader = new CANSparkMax(Constants.CanbusId.PIVOT_LEADER, MotorType.kBrushless);
@@ -45,8 +42,8 @@ public class PivotSubsystem extends SubsystemBase {
 			try {
 				Thread.sleep(1000);
 				pivotEncoder = pivotLeader.getAbsoluteEncoder(Type.kDutyCycle);
-			} catch (InterruptedException e) {
-				Thread.currentThread().interrupt();
+			} catch (Exception e) {
+
 			}
 		}
 
@@ -55,21 +52,14 @@ public class PivotSubsystem extends SubsystemBase {
 		reverseLimit = pivotLeader.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
 		forwardLimit.enableLimitSwitch(true);
 		reverseLimit.enableLimitSwitch(true);
-		SmartDashboard.putBoolean("Forward Limit Enabled", forwardLimit.isLimitSwitchEnabled());
-		SmartDashboard.putBoolean("Reverse Limit Enabled", reverseLimit.isLimitSwitchEnabled());
 
 		configureMotors();
 		configurePID();
 		burnFlash();
 
-		SmartDashboard.putNumber("Position", position);
-		SmartDashboard.putNumber("P Value", Constants.Pivot.P);
-		SmartDashboard.putNumber("I Value", Constants.Pivot.I);
-		SmartDashboard.putNumber("D Value", Constants.Pivot.D);
-		SmartDashboard.putNumber("IZone", Constants.Pivot.IZONE);
-		SmartDashboard.putNumber("FF Value", Constants.Pivot.FF);
-		SmartDashboard.putNumber("Min Output", Constants.Pivot.MIN_OUTPUT);
-		SmartDashboard.putNumber("Max Output", Constants.Pivot.MAX_OUTPUT);
+		if (DEBUG) {
+			initPIDTune();
+		}
 	}
 
 	private void configureMotors() {
@@ -87,14 +77,13 @@ public class PivotSubsystem extends SubsystemBase {
 		pivotEncoder.setInverted(false);
 		pivotEncoder.setPositionConversionFactor(360);
 
-		pivotPIDController.setPositionPIDWrappingEnabled(true);
-
 		pivotPIDController.setP(Constants.Pivot.P);
 		pivotPIDController.setI(Constants.Pivot.I);
 		pivotPIDController.setD(Constants.Pivot.D);
 		pivotPIDController.setIZone(Constants.Pivot.IZONE);
 		pivotPIDController.setFF(Constants.Pivot.FF);
 		pivotPIDController.setOutputRange(Constants.Pivot.MIN_OUTPUT, Constants.Pivot.MAX_OUTPUT);
+		pivotPIDController.setPositionPIDWrappingEnabled(true);
 		pivotPIDController.setFeedbackDevice(pivotEncoder);
 	}
 
@@ -120,11 +109,26 @@ public class PivotSubsystem extends SubsystemBase {
 
 	@Override
 	public void periodic() {
-		SmartDashboard.putNumber("ActualPosition", pivotEncoder.getPosition());
-		SmartDashboard.putNumber("PositionConversion", pivotEncoder.getPositionConversionFactor());
-		position = SmartDashboard.getNumber("Position", 0);
-		setAngle(position);
+		if (DEBUG) {
+			tunePID();
+		}
+	}
 
+	private void initPIDTune() {
+		SmartDashboard.putBoolean("Forward Limit Enabled", forwardLimit.isLimitSwitchEnabled());
+		SmartDashboard.putBoolean("Reverse Limit Enabled", reverseLimit.isLimitSwitchEnabled());
+
+		SmartDashboard.putNumber("Position", position);
+		SmartDashboard.putNumber("P Value", Constants.Pivot.P);
+		SmartDashboard.putNumber("I Value", Constants.Pivot.I);
+		SmartDashboard.putNumber("D Value", Constants.Pivot.D);
+		SmartDashboard.putNumber("IZone", Constants.Pivot.IZONE);
+		SmartDashboard.putNumber("FF Value", Constants.Pivot.FF);
+		SmartDashboard.putNumber("Min Output", Constants.Pivot.MIN_OUTPUT);
+		SmartDashboard.putNumber("Max Output", Constants.Pivot.MAX_OUTPUT);
+	}
+
+	private void tunePID() {
 		// Fetch PID values from SmartDashboard
 		double pValue = SmartDashboard.getNumber("P Value", Constants.Pivot.P);
 		double iValue = SmartDashboard.getNumber("I Value", Constants.Pivot.I);
@@ -144,5 +148,9 @@ public class PivotSubsystem extends SubsystemBase {
 
 		SmartDashboard.putBoolean("Forward Limit Switch", forwardLimit.isPressed());
 		SmartDashboard.putBoolean("Reverse Limit Switch", reverseLimit.isPressed());
+		SmartDashboard.putNumber("ActualPosition", pivotEncoder.getPosition());
+		SmartDashboard.putNumber("PositionConversion", pivotEncoder.getPositionConversionFactor());
+		position = SmartDashboard.getNumber("Position", 0);
+		setAngle(position);
 	}
 }

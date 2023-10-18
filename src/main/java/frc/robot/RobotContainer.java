@@ -10,26 +10,25 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandPS4Controller;
-import frc.robot.Constants.OI;
 import frc.robot.commands.Intake.IntakeCommand;
 import frc.robot.commands.Intake.IntakeOutCommand;
-import frc.robot.commands.VisionTracking.CycleGridLeft;
-import frc.robot.commands.VisionTracking.CycleGridRight;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.NodeSelectionSubsystem;
 import frc.robot.subsystems.PivotSubsystem;
-import frc.robot.subsystems.VisionTrackingSubsystem;
+// import frc.robot.commands.VisionTracking.CycleGridLeft;
+// import frc.robot.commands.VisionTracking.CycleGridRight;
+// import frc.robot.subsystems.NodeSelectionSubsystem;
+// import frc.robot.subsystems.VisionTrackingSubsystem;
 
 public class RobotContainer {
 
 	// Subsystems
 	private final DriveSubsystem driveSubsystem = new DriveSubsystem();
-	private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem();
 	private final PivotSubsystem pivotSubsystem = new PivotSubsystem();
+	private final IntakeSubsystem intakeSubsystem = new IntakeSubsystem(pivotSubsystem);
 
-	private final NodeSelectionSubsystem nodeSelectionSubsystem = new NodeSelectionSubsystem();
-	private final VisionTrackingSubsystem visionTrackingSubsystem = new VisionTrackingSubsystem();
+	// private final NodeSelectionSubsystem nodeSelectionSubsystem = new NodeSelectionSubsystem();
+	// private final VisionTrackingSubsystem visionTrackingSubsystem = new VisionTrackingSubsystem();
 
 	CommandPS4Controller driverController = new CommandPS4Controller(Constants.OI.DRIVER_CONTROLLER_PORT);
 
@@ -48,23 +47,26 @@ public class RobotContainer {
 				// The left stick controls translation of the robot.
 				// Turning is controlled by the X axis of the right stick.
 				new RunCommand(
-						() -> driveSubsystem.drive(
-								-MathUtil.applyDeadband(driverController.getLeftY(), OI.DRIVE_DEAD_BAND),
-								-MathUtil.applyDeadband(driverController.getLeftX(), OI.DRIVE_DEAD_BAND),
-								-MathUtil.applyDeadband(driverController.getRightX(), OI.DRIVE_DEAD_BAND),
-								true, true),
-						driveSubsystem));
+                    () -> driveSubsystem.drive(
+                            speedLimiter.calculate(-MathUtil.applyDeadband(driverController.getLeftY(), Constants.OI.DRIVE_DEAD_BAND)),
+                            -MathUtil.applyDeadband(driverController.getLeftX(), Constants.OI.DRIVE_DEAD_BAND),
+                            rotLimiter.calculate(-MathUtil.applyDeadband(driverController.getRightX(), Constants.OI.DRIVE_DEAD_BAND)),
+                            true, true),
+                    driveSubsystem));
 
-		driverController.L1().onTrue(new CycleGridLeft(nodeSelectionSubsystem));
-		driverController.R1().onTrue(new CycleGridRight(nodeSelectionSubsystem));
+		// driverController.L1().onTrue(new CycleGridLeft(nodeSelectionSubsystem));
+		// driverController.R1().onTrue(new CycleGridRight(nodeSelectionSubsystem));
 
-		driverController.triangle().whileTrue(new IntakeOutCommand(intakeSubsystem));
-		driverController.cross().whileTrue(new IntakeCommand(intakeSubsystem));
+		driverController.L2().whileTrue(new IntakeOutCommand(intakeSubsystem));
+		driverController.L1().whileTrue(new RunCommand(() -> driveSubsystem.lockDrive(), driveSubsystem));
 
-		driverController.circle()
-				.whileTrue(new RunCommand(
-						() -> driveSubsystem.setX(),
-						driveSubsystem));
+		driverController.R2().whileTrue(new IntakeCommand(intakeSubsystem));
+		driverController.R1().whileTrue(new RunCommand(() -> pivotSubsystem.setAngle(Constants.Pivot.DRIVE), pivotSubsystem));
+
+		driverController.square().onTrue(new RunCommand(() -> pivotSubsystem.setAngle(Constants.Pivot.PICK_UP), pivotSubsystem));
+		driverController.cross().onTrue(new RunCommand(() -> pivotSubsystem.setAngle(Constants.Pivot.LOW_SCORE), pivotSubsystem));
+		driverController.circle().onTrue(new RunCommand(() -> pivotSubsystem.setAngle(Constants.Pivot.MID_SCORE), pivotSubsystem));
+		driverController.triangle().onTrue(new RunCommand(() -> pivotSubsystem.setAngle(Constants.Pivot.HIGH_SCORE), pivotSubsystem));
 	}
 
 	public Command getAutonomousCommand() {
