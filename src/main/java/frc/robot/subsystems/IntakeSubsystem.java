@@ -49,7 +49,7 @@ public class IntakeSubsystem extends SubsystemBase {
 		rightMotor.burnFlash();
 		topMotor.burnFlash();
 
-		intakeLimitSwitch = new DigitalInput(0);
+		intakeLimitSwitch = new DigitalInput(7);
 	}
 
 	public void runIntakeIn() {
@@ -63,13 +63,28 @@ public class IntakeSubsystem extends SubsystemBase {
 				MessageType.DEBUG);
 
 		if (isCubeIntakeComplete()) {
-			stopIntake();
+			slowIntake();
 			pivotSubsystem.setAngle(Constants.Pivot.DRIVE);
 		} else {
 			leftMotor.set(wheelsIntakeMaxSpeed);
 			rightMotor.set(wheelsIntakeMaxSpeed);
 			topMotor.set(rollerIntakeMaxSpeed);
 		}
+	}
+
+	public void runIntakeOutSlow() {
+		LoggingManager.log(String.format(
+				"Running intake out: WheelSpeed=%.2f (Inverted: %b)-(Inverted: %b), RollerSpeed=%.2f (Inverted: %b)",
+				wheelsIntakeMaxSpeed,
+				leftMotor.getInverted(),
+				rightMotor.getInverted(),
+				rollerIntakeMaxSpeed,
+				topMotor.getInverted()),
+				MessageType.DEBUG);
+
+		leftMotor.set(-0.5);
+		rightMotor.set(-0.5);
+		topMotor.set(-0.5);
 	}
 
 	public void runIntakeOut() {
@@ -85,6 +100,13 @@ public class IntakeSubsystem extends SubsystemBase {
 		leftMotor.set(-wheelsShootMaxSpeed);
 		rightMotor.set(-wheelsShootMaxSpeed);
 		topMotor.set(-rollerShooteMaxSpeed);
+	}
+
+	public void slowIntake() {
+		LoggingManager.log("Intake stopped", MessageType.DEBUG);
+		leftMotor.set(0.1);
+		rightMotor.set(0.1);
+		topMotor.set(0.1);
 	}
 
 	public void stopIntake() {

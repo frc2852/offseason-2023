@@ -38,8 +38,8 @@ public final class Constants {
     public static final double MIN_OUTPUT = -0.2, MAX_OUTPUT = 0.15;
 
     //PIVOT Positions
-    public static final double DRIVE = 0;
-    public static final double PICK_UP = 100;
+    public static final double DRIVE = 10;
+    public static final double PICK_UP = 120;
     public static final double LOW_SCORE = 90;
     public static final double MID_SCORE = 75;
     public static final double HIGH_SCORE = 50;
@@ -67,7 +67,7 @@ public final class Constants {
     public static final double MAGNITUDE_SLEW_RATE = 1.8;
 
     // Percent per second (1 = 100%)
-    public static final double ROTATIONAL_SLEW_RATE = 2.0;
+    public static final double ROTATIONAL_SLEW_RATE = 1.5;
 
     // Chassis configuration
     public static final double TRACK_WIDTH = Units.inchesToMeters(17.5);

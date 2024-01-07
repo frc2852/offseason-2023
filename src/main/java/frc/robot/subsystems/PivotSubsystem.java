@@ -26,11 +26,6 @@ public class PivotSubsystem extends SubsystemBase {
 	private final SparkMaxPIDController pivotPIDController;
 	private AbsoluteEncoder pivotEncoder;
 
-	private double position = 0;
-
-	private final SparkMaxLimitSwitch forwardLimit;
-	private final SparkMaxLimitSwitch reverseLimit;
-
 	private final boolean DEBUG = false;
 
 	public PivotSubsystem() {
@@ -48,10 +43,10 @@ public class PivotSubsystem extends SubsystemBase {
 		}
 
 		pivotPIDController = pivotLeader.getPIDController();
-		forwardLimit = pivotLeader.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-		reverseLimit = pivotLeader.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
-		forwardLimit.enableLimitSwitch(true);
-		reverseLimit.enableLimitSwitch(true);
+		// forwardLimit = pivotLeader.getForwardLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+		// reverseLimit = pivotLeader.getReverseLimitSwitch(SparkMaxLimitSwitch.Type.kNormallyOpen);
+		// forwardLimit.enableLimitSwitch(true);
+		// reverseLimit.enableLimitSwitch(true);
 
 		configureMotors();
 		configurePID();
@@ -60,6 +55,8 @@ public class PivotSubsystem extends SubsystemBase {
 		if (DEBUG) {
 			initPIDTune();
 		}
+
+		setAngle(Constants.Pivot.DRIVE);
 	}
 
 	private void configureMotors() {
@@ -77,8 +74,9 @@ public class PivotSubsystem extends SubsystemBase {
 		pivotEncoder.setInverted(false);
 		pivotEncoder.setPositionConversionFactor(360);
 		
-		double currentOffset = pivotEncoder.getZeroOffset();
-		pivotEncoder.setZeroOffset(currentOffset + 10);
+		// double currentOffset = pivotEncoder.getZeroOffset();
+		pivotEncoder.setZeroOffset(268.5409904);
+		// SmartDashboard.putNumber("Offset", currentOffset);
 
 		pivotPIDController.setP(Constants.Pivot.P);
 		pivotPIDController.setI(Constants.Pivot.I);
@@ -86,7 +84,7 @@ public class PivotSubsystem extends SubsystemBase {
 		pivotPIDController.setIZone(Constants.Pivot.IZONE);
 		pivotPIDController.setFF(Constants.Pivot.FF);
 		pivotPIDController.setOutputRange(Constants.Pivot.MIN_OUTPUT, Constants.Pivot.MAX_OUTPUT);
-		pivotPIDController.setPositionPIDWrappingEnabled(true);
+		pivotPIDController.setPositionPIDWrappingEnabled(false);
 		pivotPIDController.setFeedbackDevice(pivotEncoder);
 	}
 
@@ -96,17 +94,12 @@ public class PivotSubsystem extends SubsystemBase {
 	}
 
 	public void setAngle(double angle) {
-		if (angle > 105 && angle < 200) {
-			position = 105;
-		} else if (angle < 0 || angle >= 200) {
-			position = 0;
+		if (angle > 130) {
+			angle = 120;
+		} else if (angle < 10) {
+			angle = 10;
 		}
 
-		if (pivotEncoder.getPosition() > 300) {
-			position = 10;
-		}
-
-		angle = position;
 		pivotPIDController.setReference(angle, ControlType.kPosition);
 	}
 
@@ -118,42 +111,41 @@ public class PivotSubsystem extends SubsystemBase {
 	}
 
 	private void initPIDTune() {
-		SmartDashboard.putBoolean("Forward Limit Enabled", forwardLimit.isLimitSwitchEnabled());
-		SmartDashboard.putBoolean("Reverse Limit Enabled", reverseLimit.isLimitSwitchEnabled());
+		// SmartDashboard.putBoolean("Forward Limit Enabled", forwardLimit.isLimitSwitchEnabled());
+		// SmartDashboard.putBoolean("Reverse Limit Enabled", reverseLimit.isLimitSwitchEnabled());
 
-		SmartDashboard.putNumber("Position", position);
-		SmartDashboard.putNumber("P Value", Constants.Pivot.P);
-		SmartDashboard.putNumber("I Value", Constants.Pivot.I);
-		SmartDashboard.putNumber("D Value", Constants.Pivot.D);
-		SmartDashboard.putNumber("IZone", Constants.Pivot.IZONE);
-		SmartDashboard.putNumber("FF Value", Constants.Pivot.FF);
+		// SmartDashboard.putNumber("P Value", Constants.Pivot.P);
+		// SmartDashboard.putNumber("I Value", Constants.Pivot.I);
+		// SmartDashboard.putNumber("D Value", Constants.Pivot.D);
+		// SmartDashboard.putNumber("IZone", Constants.Pivot.IZONE);
+		// SmartDashboard.putNumber("FF Value", Constants.Pivot.FF);
 		SmartDashboard.putNumber("Min Output", Constants.Pivot.MIN_OUTPUT);
 		SmartDashboard.putNumber("Max Output", Constants.Pivot.MAX_OUTPUT);
 	}
 
 	private void tunePID() {
 		// Fetch PID values from SmartDashboard
-		double pValue = SmartDashboard.getNumber("P Value", Constants.Pivot.P);
-		double iValue = SmartDashboard.getNumber("I Value", Constants.Pivot.I);
-		double dValue = SmartDashboard.getNumber("D Value", Constants.Pivot.D);
-		double izoneValue = SmartDashboard.getNumber("IZone", Constants.Pivot.IZONE);
-		double ffValue = SmartDashboard.getNumber("FF Value", Constants.Pivot.FF);
+		// double pValue = SmartDashboard.getNumber("P Value", Constants.Pivot.P);
+		// double iValue = SmartDashboard.getNumber("I Value", Constants.Pivot.I);
+		// double dValue = SmartDashboard.getNumber("D Value", Constants.Pivot.D);
+		// double izoneValue = SmartDashboard.getNumber("IZone", Constants.Pivot.IZONE);
+		// double ffValue = SmartDashboard.getNumber("FF Value", Constants.Pivot.FF);
 		double minOutput = SmartDashboard.getNumber("Min Output", Constants.Pivot.MIN_OUTPUT);
 		double maxOutput = SmartDashboard.getNumber("Max Output", Constants.Pivot.MAX_OUTPUT);
 
 		// Update PID controller with the fetched values
-		pivotPIDController.setP(pValue);
-		pivotPIDController.setI(iValue);
-		pivotPIDController.setD(dValue);
-		pivotPIDController.setIZone(izoneValue);
-		pivotPIDController.setFF(ffValue);
+		// pivotPIDController.setP(pValue);
+		// pivotPIDController.setI(iValue);
+		// pivotPIDController.setD(dValue);
+		// pivotPIDController.setIZone(izoneValue);
+		// pivotPIDController.setFF(ffValue);
 		pivotPIDController.setOutputRange(minOutput, maxOutput);
 
-		SmartDashboard.putBoolean("Forward Limit Switch", forwardLimit.isPressed());
-		SmartDashboard.putBoolean("Reverse Limit Switch", reverseLimit.isPressed());
+		// SmartDashboard.putBoolean("Forward Limit Switch", forwardLimit.isPressed());
+		// SmartDashboard.putBoolean("Reverse Limit Switch", reverseLimit.isPressed());
 		SmartDashboard.putNumber("ActualPosition", pivotEncoder.getPosition());
 		SmartDashboard.putNumber("PositionConversion", pivotEncoder.getPositionConversionFactor());
-		position = SmartDashboard.getNumber("Position", 0);
-		setAngle(position);
+		// double position = SmartDashboard.getNumber("Position", 0);
+		// setAngle(position);
 	}
 }
